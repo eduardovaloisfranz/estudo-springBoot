@@ -13,7 +13,6 @@ public class Produto {
 	private String nome;
 	private double preco;
 	private double desconto;
-	//preço desconto
 	public Produto() {	}
 	
 	public Produto(String nome) {

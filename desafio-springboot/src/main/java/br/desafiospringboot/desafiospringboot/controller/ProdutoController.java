@@ -4,6 +4,8 @@ package br.desafiospringboot.desafiospringboot.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import br.desafiospringboot.desafiospringboot.model.entities.Produto;
 import br.desafiospringboot.desafiospringboot.model.repositories.ProdutoRepository;
@@ -30,14 +34,25 @@ public class ProdutoController {
 	}
 	
 	@GetMapping("/{id}")
-	public Produto getProdutoById(@PathVariable int id) {
-		return produtoRepository.findById(id).get();
+	public ResponseEntity<Produto> getProdutoById(@PathVariable int id) {
+		try {
+			Produto prod = produtoRepository.findById(id).get();			
+			return new ResponseEntity<Produto>(prod, HttpStatus.OK);		
+			
+		}catch(Exception ex) {			
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
+		}
 	}
 	
 	@PostMapping()
 	public Produto addProduto(@RequestBody Produto produto) {	
-		produtoRepository.save(produto);	
-		return produto;
+		try {
+			produtoRepository.save(produto);	
+			return produto;			
+		}catch(Exception ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
+		}
+		
 	}
 	
 	@PutMapping("/{id}")		
@@ -54,7 +69,7 @@ public class ProdutoController {
 	
 	@DeleteMapping("/{id}")
 	public Produto deleteProduct(@PathVariable int id) {
-		Produto oldProd = produtoRepository.findById(id).get();
+		Produto oldProd = produtoRepository.findById(id).get();	
 		produtoRepository.delete(oldProd);
 		return oldProd;
 	}
